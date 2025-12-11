@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ doc.filename if doc else document_title|default('Document') }} Summary</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Optional: Custom style for highlighting the original text */
+        .highlight-container {
+            transition: all 0.3s ease-in-out;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+        }
+        .highlight-container.active {
+            max-height: 1000px;
+            opacity: 1;
+            padding-top: 2rem;
+        }
+        mark {
+            background-color: #fcd34d; /* Amber-300 for visible highlighting */
+            padding: 2px 0;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-20">
+          <!-- Logo -->
+          <div class="flex items-center">
+            <a href="{{ url_for('main.home') }}">
+              <img
+                src="../static/images/logo.png"
+                alt="DocBrief Logo"
+                class="h-16 w-auto"
+              />
+          </div>
+
+          <!-- Desktop Buttons -->
+          <div class="hidden md:flex items-center space-x-4">
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('main.dashboard') }}" class="flex items-center text-gray-700 font-medium text-lg text-black transition duration-150 hover:text-blue-700 hover:underline">
+                {{ current_user.full_name.split(' ')[0] }}
+            </a>
+
+            <a
+              href="{{ url_for('auth.logout') }}"
+              class="px-4 py-2 rounded-md font-medium bg-blue-600 text-white transition-colors duration-200 hover:bg-blue-700"
+            >
+              Log Out
+            </a>
+            {% else %}
+            <a
+              href="{{ url_for('auth.login') }}"
+              class="px-4 py-2 rounded-md font-medium border border-blue-600 text-blue-600 bg-white transition-colors duration-200 hover:bg-blue-100 hover:text-blue-800"
+            >
+              Log In
+            </a>
+            <a
+              href="{{ url_for('auth.signup') }}"
+              class="px-4 py-2 rounded-md font-medium bg-blue-600 text-white transition-colors duration-200 hover:bg-blue-700"
+            >
+              Create Free Account
+            </a>
+            {% endif %}
+          </div>
+
+          <!-- Mobile Hamburger -->
+          <div class="md:hidden">
+            <button
+              id="hamburger"
+              aria-expanded="false"
+              aria-controls="mobile-menu"
+              class="p-2 rounded-md focus:outline-none"
+            >
+              <!-- Open Icon -->
+              <svg
+                id="icon-open"
+                class="h-6 w-6"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+              <!-- Close Icon -->
+              <svg
+                id="icon-close"
+                class="h-6 w-6 hidden"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile Menu -->
+      <div
+        id="mobile-menu"
+        class="md:hidden px-4 pb-4 transform transition-all duration-300 ease-in-out opacity-0 -translate-y-2"
+        style="display: none"
+      >
+        <div class="flex justify-end space-x-2">
+          {% if current_user.is_authenticated %}
+          <a
+            href="{{ url_for('main.dashboard') }}"
+            class="px-3 py-2 rounded-md font-medium border border-blue-600 text-blue-600 bg-white transition-colors duration-200 hover:bg-blue-100 hover:text-blue-800"
+          >
+            {{ current_user.full_name.split(' ')[0] }}
+          </a>
+          <a
+            href="{{ url_for('auth.logout') }}"
+            class="px-3 py-2 rounded-md font-medium bg-blue-600 text-white transition-colors duration-200 hover:bg-blue-700"
+          >
+            Log Out
+          </a>
+          {% else %}
+          <a
+            href="{{ url_for('auth.login') }}"
+            class="px-3 py-2 rounded-md font-medium border border-blue-600 text-blue-600 bg-white transition-colors duration-200 hover:bg-blue-100 hover:text-blue-800"
+          >
+            Log In
+          </a>
+          <a
+            href="{{ url_for('auth.signup') }}"
+            class="px-3 py-2 rounded-md font-medium bg-blue-600 text-white transition-colors duration-200 hover:bg-blue-700"
+          >
+            Create Free Account
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    </nav>
+
+
+<div class="min-h-screen flex flex-col items-center p-4">
+    <div class="w-full max-w-4xl bg-white p-8 rounded-lg shadow-xl mt-10 mb-10">
+        
+        <div class="text-center mb-8 border-b pb-4">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-blue-800">
+                Summary: {{ doc.filename if doc else document_title|default('Anonymous Upload') }}
+            </h1>
+            <p class="text-sm text-gray-500 mt-2">Key insights processed by DocBrief.</p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-10 space-y-4 sm:space-y-0">
+            
+            <div class="flex items-center space-x-2">
+                {% if doc %}
+                <span class="text-gray-600 font-medium">View:</span>
+                <a href="{{ url_for('main.view_summary', doc_id=doc.id, summary_type='bullets') }}" 
+                   class="px-4 py-2 rounded-full text-sm font-semibold transition-colors 
+                          {% if summary_type == 'bullets' %}bg-blue-600 text-white{% else %}bg-gray-200 text-gray-700 hover:bg-gray-300{% endif %}">
+                    Bullet Points
+                </a>
+                <a href="{{ url_for('main.view_summary', doc_id=doc.id, summary_type='simple') }}" 
+                   class="px-4 py-2 rounded-full text-sm font-semibold transition-colors
+                          {% if summary_type == 'simple' %}bg-blue-600 text-white{% else %}bg-gray-200 text-gray-700 hover:bg-gray-300{% endif %}">
+                    Paragraph Summary
+                </a>
+                {% else %}
+                <span class="text-gray-600 font-medium">View: Currently {{ summary_type|capitalize }}</span>
+                {% endif %}
+            </div>
+
+            <div class="relative inline-block text-left">
+                <span class="text-gray-600 font-medium mr-2">Translate:</span>
+                {% if doc %}
+                <select onchange="if(this.value) window.location.href=this.value;"
+                        class="px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-medium focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Select Language</option>
+                    
+                    <option value="{{ url_for('main.translate', doc_id=doc.id, lang='hi') }}">Hindi (hi)</option>
+                    <option value="{{ url_for('main.translate', doc_id=doc.id, lang='bn') }}">Bengali (bn)</option>
+                    <option value="{{ url_for('main.translate', doc_id=doc.id, lang='ta') }}">Tamil (ta)</option>
+                    <option value="{{ url_for('main.translate', doc_id=doc.id, lang='te') }}">Telugu (te)</option>
+                    <option value="{{ url_for('main.translate', doc_id=doc.id, lang='ml') }}">Malayalam (ml)</option>
+                    <option value="{{ url_for('main.translate', doc_id=doc.id, lang='kn') }}">Kannada (kn)</option>
+                    
+                    <option value="{{ url_for('main.translate', doc_id=doc.id, lang='es') }}">Spanish (es)</option>
+                    <option value="{{ url_for('main.translate', doc_id=doc.id, lang='fr') }}">French (fr)</option>
+                    <option value="{{ url_for('main.translate', doc_id=doc.id, lang='de') }}">German (de)</option>
+
+                </select>
+                {% else %}
+                <span class="text-gray-400 text-sm">Log in to enable translation.</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="mb-10 p-6 bg-blue-50 rounded-lg border border-blue-200">
+            <h2 class="text-xl font-bold text-blue-700 mb-4 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 3.414L16.586 8A2 2 0 0118 9.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm0 4a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1z" clip-rule="evenodd" />
+                </svg>
+                {% if translated_points %}Translated Summary ({{ lang.upper() }}){% else %}Summary{% endif %}
+            </h2>
+
+            {% if translated_points %}
+            <ul class="space-y-4 text-gray-700 text-base list-disc pl-5">
+                {% for point in translated_points %}
+                <li class="p-2 font-medium text-gray-800">{{ point }}</li>
+                {% endfor %}
+            </ul>
+            {% elif summary_type == 'simple' %}
+            <p class="text-gray-700 leading-relaxed whitespace-pre-wrap">{{ bullet_points[0] }}</p>
+            {% else %}
+            <ul class="space-y-4 text-gray-700 text-base list-disc pl-5">
+                {% for point in bullet_points %}
+                <li class="p-2 {% if doc %}group cursor-pointer hover:bg-blue-100 transition duration-150{% endif %}">
+                    {% if doc %}
+                    <a href="{{ url_for('main.highlight', doc_id=doc.id, point_index=loop.index0) }}" class="flex items-center w-full h-full">
+                        <span class="font-medium text-gray-800">{{ point }}</span>
+                        <span class="text-xs text-blue-500 ml-2 opacity-0 group-hover:opacity-100 transition">
+                        (Click to highlight source)
+                        </span>
+                    </a>
+                    {% else %}
+                    <span class="font-medium text-gray-800">{{ point }}</span>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+
+        {% if key_terms %}
+        <div class="mb-10">
+            <h2 class="text-xl font-bold text-gray-700 mb-4 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13.5m0-13.5a4.125 4.125 0 110 8.25m0-8.25V6.253a4.125 4.125 0 00-4.125-4.125H5.625a4.125 4.125 0 00-4.125 4.125v4.5m8.25 0V15.75m0 0a2.25 2.25 0 002.25 2.25h1.5a2.25 2.25 0 002.25-2.25v-4.5m-8.25 0H2.25m0 0h3.5m0 0a4.125 4.125 0 01-4.125 4.125v4.5a4.125 4.125 0 004.125 4.125H5.625a4.125 4.125 0 004.125-4.125V15.75m0 0H12" />
+                </svg>
+                Key Terms
+            </h2>
+            <ul class="list-none space-y-3 text-gray-600">
+                {% for term, definition in key_terms.items() %}
+                    <li class="p-4 bg-gray-50 rounded-md border border-gray-200 shadow-sm">
+                        <span class="font-extrabold text-blue-700">{{ term }}:</span> 
+                        <span class="text-gray-800">{{ definition }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 justify-center mt-8 pt-6 border-t">
+            
+            {% if doc %}
+            <a href="{{ url_for('main.download', doc_id=doc.id) }}" 
+               class="flex items-center justify-center bg-gray-700 text-white px-6 py-3 rounded-full font-semibold hover:bg-gray-800 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10 2a1 1 0 011 1v7h3.293a1 1 0 01.707 1.707l-4 4a1 1 0 01-1.414 0l-4-4A1 1 0 015.707 10H9V3a1 1 0 011-1zM3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
+                </svg>
+                Download Original File ({{ doc.filename }})
+            </a>
+            {% else %}
+            <a href="{{ url_for('auth.login') }}"
+               class="flex items-center justify-center bg-gray-400 text-white px-6 py-3 rounded-full font-semibold hover:bg-gray-500 transition-colors">
+                Log in to save and download file
+            </a>
+            {% endif %}
+
+            {% if doc %}
+            <a href="{{ url_for('main.download_summary', doc_id=doc.id) }}"
+               class="flex items-center justify-center bg-blue-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-700 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 11.586V3a1 1 0 112 0v8.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+                Download Summary (PDF)
+            </a>
+            {% else %}
+            <a href="{{ url_for('main.download_summary') }}"
+               class="flex items-center justify-center bg-blue-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-700 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 11.586V3a1 1 0 112 0v8.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 11.586V3a1 1 0 112 0v8.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+                Download Summary (PDF)
+            </a>
+            {% endif %}
+        </div>
+        
+        <div id="highlight-section" class="highlight-container bg-white p-6 mt-8 rounded-lg border border-yellow-300 shadow-md">
+            <h3 class="text-xl font-bold text-yellow-700 mb-4">Source Text Highlighted</h3>
+            <div id="highlight-content" class="text-gray-700 whitespace-pre-wrap text-sm">
+                {% if full_text %}
+                    <p class="mb-4 font-semibold text-yellow-800">Summary Point: "{{ bullet }}"</p>
+                    {{ full_text|safe }}
+                {% else %}
+                    <p>Click on any bullet point above to see the original source text highlighted here.</p>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

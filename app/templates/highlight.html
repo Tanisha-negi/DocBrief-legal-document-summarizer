@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Source Highlight - DocBrief</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom style for the highlighting */
+        mark {
+            background-color: #fcd34d; /* Amber-300: Matches the style in result.html */
+            padding: 2px 0;
+            border-radius: 2px;
+            font-weight: 600;
+        }
+        /* Style to preserve formatting (paragraphs and line breaks) */
+        .source-text {
+            white-space: pre-wrap;
+            line-height: 1.65;
+            font-size: 0.95rem;
+            font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif; /* Professional reading font */
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+<div class="min-h-screen flex flex-col items-center p-4">
+    <div class="w-full max-w-4xl bg-white p-8 rounded-lg shadow-xl mt-10 mb-10">
+        
+        <div class="mb-8 border-b pb-4 flex justify-between items-center">
+            
+            <a href="{{ url_for('main.view_summary', doc_id=doc_id, summary_type='bullets') }}" 
+               class="flex items-center text-blue-600 hover:text-blue-800 transition duration-150">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                Back to Summary
+            </a>
+
+            <h1 class="text-2xl font-bold text-gray-800">Source Verification</h1>
+        </div>
+
+        <div class="mb-8 p-4 border-l-4 border-blue-500 bg-blue-50 rounded-md">
+            <p class="text-sm font-semibold text-blue-700 uppercase tracking-wider mb-1">Summary Point Requested:</p>
+            <p class="text-xl text-gray-900 italic font-serif">"{{ bullet }}"</p>
+        </div>
+
+        <div class="mb-8">
+            <h2 class="text-lg font-semibold text-gray-700 mb-4 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-1 1v2a1 1 0 002 0V3a1 1 0 00-1-1zM6.586 7.414a1 1 0 001.414 1.414L9 8.414l1.293 1.293a1 1 0 001.414-1.414l-1.293-1.293 1.293-1.293a1 1 0 10-1.414-1.414L9 6.586l-1.293-1.293a1 1 0 00-1.414 1.414l1.293 1.293-1.293 1.293zM10 18a1 1 0 01-1-1v-2a1 1 0 112 0v2a1 1 0 01-1 1z" clip-rule="evenodd" />
+                    <path fill-rule="evenodd" d="M10 3a7 7 0 100 14 7 7 0 000-14zM2 10a8 8 0 1116 0 8 8 0 01-16 0z" clip-rule="evenodd" />
+                </svg>
+                Matching Clause in Original Document
+            </h2>
+            
+            <div class="p-6 bg-gray-50 border border-gray-200 rounded-lg shadow-inner source-text">
+                {% if full_text %}
+                    {{ full_text|safe }}
+                {% else %}
+                    <p class="text-red-500">Could not find a close match for the selected summary point in the original document.</p>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

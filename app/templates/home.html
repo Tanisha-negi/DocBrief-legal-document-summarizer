@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Legal-AI Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f3f4f6;
+      }
+    </style>
+
+    <style>
+      @keyframes fade-in-out {
+        0% {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        10% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        90% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        100% {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+      }
+      .animate-fade-in-out {
+        animation: fade-in-out 5s ease-in-out forwards;
+      }
+    </style>
+
+    <link rel="stylesheet" href="../static/style.css" />
+  </head>
+
+  <body class="bg-gray-50 text-gray-800">
+    <!-- Navbar -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-20">
+          <!-- Logo -->
+          <div class="flex items-center">
+            <a href="{{ url_for('main.home') }}">
+              <img
+                src="../static/images/logo.png"
+                alt="DocBrief Logo"
+                class="h-16 w-auto"
+              />
+          </div>
+
+          <!-- Desktop Buttons -->
+          <div class="hidden md:flex items-center space-x-4">
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('main.dashboard') }}" class="flex items-center text-gray-700 font-medium text-lg text-black transition duration-150 hover:text-blue-700 hover:underline">
+                {{ current_user.full_name.split(' ')[0] }}
+            </a>
+
+            <a
+              href="{{ url_for('auth.logout') }}"
+              class="px-4 py-2 rounded-md font-medium bg-blue-600 text-white transition-colors duration-200 hover:bg-blue-700"
+            >
+              Log Out
+            </a>
+            {% else %}
+            <a
+              href="{{ url_for('auth.login') }}"
+              class="px-4 py-2 rounded-md font-medium border border-blue-600 text-blue-600 bg-white transition-colors duration-200 hover:bg-blue-100 hover:text-blue-800"
+            >
+              Log In
+            </a>
+            <a
+              href="{{ url_for('auth.signup') }}"
+              class="px-4 py-2 rounded-md font-medium bg-blue-600 text-white transition-colors duration-200 hover:bg-blue-700"
+            >
+              Create Free Account
+            </a>
+            {% endif %}
+          </div>
+
+          <!-- Mobile Hamburger -->
+          <div class="md:hidden">
+            <button
+              id="hamburger"
+              aria-expanded="false"
+              aria-controls="mobile-menu"
+              class="p-2 rounded-md focus:outline-none"
+            >
+              <!-- Open Icon -->
+              <svg
+                id="icon-open"
+                class="h-6 w-6"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+              <!-- Close Icon -->
+              <svg
+                id="icon-close"
+                class="h-6 w-6 hidden"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile Menu -->
+      <div
+        id="mobile-menu"
+        class="md:hidden px-4 pb-4 transform transition-all duration-300 ease-in-out opacity-0 -translate-y-2"
+        style="display: none"
+      >
+        <div class="flex justify-end space-x-2">
+          {% if current_user.is_authenticated %}
+          <a
+            href="{{ url_for('main.dashboard') }}"
+            class="px-3 py-2 rounded-md font-medium border border-blue-600 text-blue-600 bg-white transition-colors duration-200 hover:bg-blue-100 hover:text-blue-800"
+          >
+            {{ current_user.full_name.split(' ')[0] }}
+          </a>
+          <a
+            href="{{ url_for('auth.logout') }}"
+            class="px-3 py-2 rounded-md font-medium bg-blue-600 text-white transition-colors duration-200 hover:bg-blue-700"
+          >
+            Log Out
+          </a>
+          {% else %}
+          <a
+            href="{{ url_for('auth.login') }}"
+            class="px-3 py-2 rounded-md font-medium border border-blue-600 text-blue-600 bg-white transition-colors duration-200 hover:bg-blue-100 hover:text-blue-800"
+          >
+            Log In
+          </a>
+          <a
+            href="{{ url_for('auth.signup') }}"
+            class="px-3 py-2 rounded-md font-medium bg-blue-600 text-white transition-colors duration-200 hover:bg-blue-700"
+          >
+            Create Free Account
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    </nav>
+
+
+    <!-- Hero Section -->
+    <main
+      class="bg-gradient-to-r from-blue-50 via-blue-200 to-indigo-300 py-16 md:py-24 h-[90vh] flex items-center"
+    >
+      <div
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 items-center gap-0 md:gap-12"
+      >
+        <div class="text-center md:text-left pl-0 sm:pl-6">
+          <h1
+            class="text-3xl sm:text-4xl md:text-6xl font-extrabold text-gray-900 leading-snug sm:leading-tight mb-4"
+          >
+            Let us summarize your legal document for you
+            <br class="hidden sm:inline" />
+            <span class="text-blue-600">10x faster with AI</span>
+          </h1>
+          <p
+            class="text-base sm:text-lg text-gray-600 mb-8 max-w-full sm:max-w-lg mx-auto md:mx-0 px-2 sm:px-0"
+          >
+            Save time and easily review your legal contracts with our free
+            document summarizing service, powered by AI.
+          </p>
+        </div>
+
+        <!-- ✅ FORM WRAPPING STARTS HERE -->
+        <form
+          action="{{ url_for('main.summarize_doc') }}"
+          method="POST"
+          enctype="multipart/form-data"
+          class="relative bg-white p-6 sm:p-8 rounded-2xl shadow-xl border border-gray-200 text-center"
+        >
+          <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
+            Upload Your Document
+          </h2>
+          <p class="text-xs sm:text-sm text-gray-500 mb-8">
+            PDF, DOCX or TXT format
+          </p>
+
+          <div
+            class="border-2 border-dashed border-gray-300 rounded-lg p-6 sm:p-10 mb-6 transition-colors duration-200 hover:border-blue-500"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-12 sm:h-16 w-12 sm:w-16 mx-auto text-blue-500 mb-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="1.5"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M7 16a4 4 0 01-4-4V7a4 4 0 014-4h10a4 4 0 014 4v5a4 4 0 01-4 4M10 16v4a2 2 0 002 2h0a2 2 0 002-2v-4"
+              />
+            </svg>
+            <p id="file-label" class="text-xs sm:text-sm text-gray-600 mb-4">
+              Drag & drop files here or
+            </p>
+            <input
+              type="file"
+              id="file-upload"
+              name="document"
+              class="hidden"
+              required
+            />
+            <label
+              for="file-upload"
+              class="inline-block bg-blue-50 text-blue-600 px-4 sm:px-6 py-2 rounded-full font-semibold cursor-pointer transition-colors duration-200 hover:bg-blue-100 text-sm sm:text-base"
+            >
+              Browse Files
+            </label>
+            <p class="text-[10px] sm:text-xs text-gray-400 mt-2">
+              Max file size: 50MB
+            </p>
+          </div>
+
+          <button
+            type="submit"
+            class="w-full bg-blue-600 text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-bold text-base sm:text-lg hover:bg-blue-700 transition-colors duration-200 shadow-lg"
+          >
+            Summarize Document
+          </button>
+
+        </form>
+        <!-- ✅ FORM WRAPPING ENDS HERE -->
+      </div>
+    </main>
+
+    <!-- Advantages and features section -->
+    <section class="bg-white py-16 md:py-24">
+      <div class="max-w-7xl mx-auto px-[150px]">
+        <h2
+          class="text-4xl sm:text-5xl font-extrabold text-gray-900 text-center mb-16"
+        >
+          Main Advantages and Features
+        </h2>
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-12 gap-x-8"
+        >
+          <div class="text-left max-w-xs w-full">
+            <div class="flex justify-left mb-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-16 h-16 text-gray-700"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.366 1.757l-1.757 1.757a4.5 4.5 0 0 1-6.364 6.364l-4.5-4.5a4.5 4.5 0 0 1 1.242-7.244"
+                />
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">
+              Intelligent Summarization
+            </h3>
+            <p class="text-gray-600">
+              Converts dense legal docs into clean bullet points—fast, accurate,
+              and readable.
+            </p>
+          </div>
+          <div class="text-left max-w-xs w-full">
+            <div class="flex justify-left mb-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-16 h-16 text-gray-700"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
+                />
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">
+              Secure & Private
+            </h3>
+            <p class="text-gray-600">
+              User authentication, encrypted file uploads, and session-based
+              access-trustworthy for sensitive docs.
+            </p>
+          </div>
+          <div class="text-left max-w-xs w-full">
+            <div class="flex justify-left mb-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-16 h-16 text-gray-700"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607ZM10.5 7.5v6m3-3h-6"
+                />
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">
+              Interactive Note Features
+            </h3>
+            <p class="text-gray-600">
+              Click to expand explanations, simplify content, or get term
+              definitions.
+            </p>
+          </div>
+          <div class="text-left max-w-xs w-full">
+            <div class="flex justify-left mb-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-16 h-16 text-gray-700"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M8.625 9.75a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12.75m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0-4.556-4.03-8.25-9-8.25S3 7.444 3 12c0 1.287.19 2.537.545 3.705a1.125 1.125 0 0 1-1.284 1.284A1.125 1.125 0 0 0 2.25 18v2.25a.75.75 0 0 0 .75.75c1.026 0 1.53.385 2.052.883a.75.75 0 0 1 .15 1.171c-.714.942-1.242 2.128-1.524 3.424a.75.75 0 0 0 .794.887 23.32 23.32 0 0 0 12.012 0 .75.75 0 0 0 .794-.887c-.282-1.296-.81-2.482-1.524-3.424a.75.75 0 0 1 .15-1.171c.522-.498 1.026-.883 2.052-.883a.75.75 0 0 0 .75-.75V18a1.125 1.125 0 0 0-.961-.755A1.125 1.125 0 0 1 21 12Z"
+                />
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">
+              Multilingual Support
+            </h3>
+            <p class="text-gray-600">
+              Translate legal content into regional languages with emotional
+              nuance.
+            </p>
+          </div>
+          <div class="text-left max-w-xs w-full">
+            <div class="flex justify-left mb-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-16 h-16 text-gray-700"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"
+                />
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">
+              Export in Your Format
+            </h3>
+            <p class="text-gray-600">
+              Download notes in PDF, DOCX, or JSON effortlessly.
+            </p>
+          </div>
+          <div class="text-left max-w-xs w-full">
+            <div class="flex justify-left mb-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-16 h-16 text-gray-700"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"
+                />
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">
+              Dashboard for Document Management
+            </h3>
+            <p class="text-gray-600">
+              Upload, view, summarize, and interact with multiple documents in
+              one place.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Steps section -->
+    <section class="bg-white py-16 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-7xl mx-auto text-center">
+        <h2 class="text-3xl sm:text-4xl font-bold text-blue-800 mb-4">
+          Legal Document Summarization in 3 Quick Steps
+        </h2>
+        <p class="text-gray-600 mb-12 text-lg">
+          Streamline your workflow with AI-powered clarity and control.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <!-- Step 1 -->
+          <div
+            class="bg-blue-50 rounded-xl p-6 shadow-sm hover:shadow-md transition"
+          >
+            <div class="text-4xl font-bold text-blue-600 mb-2">1</div>
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">
+              Upload Your Materials
+            </h3>
+            <p class="text-gray-600 mb-4">
+              Drop in contracts, policies, or case files. We support PDF, DOCX,
+              and more.
+            </p>
+            
+          </div>
+
+          <!-- Step 2 -->
+          <div
+            class="bg-blue-50 rounded-xl p-6 shadow-sm hover:shadow-md transition"
+          >
+            <div class="text-4xl font-bold text-blue-600 mb-2">2</div>
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">
+              Summarize with One Click
+            </h3>
+            <p class="text-gray-600 mb-4">
+              Generate bullet summaries with clickable clauses, timelines, and
+              mindmaps.
+            </p>
+            
+          </div>
+
+          <!-- Step 3 -->
+          <div
+            class="bg-blue-50 rounded-xl p-6 shadow-sm hover:shadow-md transition"
+          >
+            <div class="text-4xl font-bold text-blue-600 mb-2">3</div>
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">
+              Export as Needed
+            </h3>
+            <p class="text-gray-600 mb-4">
+              Save your summary in PDF, DOCX, JSON, Markdown, or AI TL;DR
+              format.
+            </p>
+            
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ section -->
+    <section class="bg-white py-16 md:py-24">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2
+          class="text-4xl sm:text-5xl font-extrabold text-gray-900 text-center mb-12"
+        >
+          Frequently Asked Questions
+        </h2>
+
+        <div class="border-t border-gray-200 divide-y divide-gray-200">
+          <!-- Loop starts here: each FAQ block -->
+          <!-- 1 -->
+          <div class="py-6">
+            <button
+              class="w-full flex justify-between items-center text-left"
+              onclick="toggleFAQ(this)"
+            >
+              <span class="text-lg font-medium text-gray-900"
+                >What does this tool actually do?</span
+              >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6 text-gray-400 transform transition-transform duration-200"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+            <div class="faq-answer hidden mt-4 text-gray-600 pr-10">
+              <p>
+                It transforms dense legal documents into clean, clickable
+                summaries. You’ll get bullet points, highlighted clauses, and
+                translations—so you can actually understand what you’re reading.
+              </p>
+            </div>
+          </div>
+
+          <!-- 2 -->
+          <div class="py-6">
+            <button
+              class="w-full flex justify-between items-center text-left"
+              onclick="toggleFAQ(this)"
+            >
+              <span class="text-lg font-medium text-gray-900"
+                >Who is this tool designed for?</span
+              >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6 text-gray-400 transform transition-transform duration-200"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+            <div class="faq-answer hidden mt-4 text-gray-600 pr-10">
+              <p>
+                Anyone who’s ever stared at a legal document and thought, “What
+                does this even mean?” Whether you’re a lawyer, student, or just
+                trying to decode your rental agreement—this tool is for you.
+              </p>
+            </div>
+          </div>
+
+          <!-- 3 -->
+          <div class="py-6">
+            <button
+              class="w-full flex justify-between items-center text-left"
+              onclick="toggleFAQ(this)"
+            >
+              <span class="text-lg font-medium text-gray-900"
+                >What types of documents can I upload?</span
+              >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6 text-gray-400 transform transition-transform duration-200"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+            <div class="faq-answer hidden mt-4 text-gray-600 pr-10">
+              <p>
+                You can upload PDFs, Word files (.docx), and plain text files.
+                Scanned images aren’t supported yet—but we’re working on it!
+              </p>
+            </div>
+          </div>
+
+          <!-- 4 -->
+          <div class="py-6">
+            <button
+              class="w-full flex justify-between items-center text-left"
+              onclick="toggleFAQ(this)"
+            >
+              <span class="text-lg font-medium text-gray-900"
+                >Is there a file size or page limit?</span
+              >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6 text-gray-400 transform transition-transform duration-200"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+            <div class="faq-answer hidden mt-4 text-gray-600 pr-10">
+              <p>
+                Currently, we support documents up to 20MB and 100 pages. For
+                longer files, consider splitting them before upload.
+              </p>
+            </div>
+          </div>
+
+          <!-- 5 -->
+          <div class="py-6">
+            <button
+              class="w-full flex justify-between items-center text-left"
+              onclick="toggleFAQ(this)"
+            >
+              <span class="text-lg font-medium text-gray-900"
+                >How does the summarization work?</span
+              >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6 text-gray-400 transform transition-transform duration-200"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+            <div class="faq-answer hidden mt-4 text-gray-600 pr-10">
+              <p>
+                We use NLP and custom logic to extract key points, clauses, and
+                obligations. It’s like having a mini legal assistant who doesn’t
+                charge by the hour.
+              </p>
+            </div>
+          </div>
+
+          <!-- 6 -->
+          <div class="py-6">
+            <button
+              class="w-full flex justify-between items-center text-left"
+              onclick="toggleFAQ(this)"
+            >
+              <span class="text-lg font-medium text-gray-900"
+                >Can I click on clauses to see more info?</span
+              >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6 text-gray-400 transform transition-transform duration-200"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+            <div class="faq-answer hidden mt-4 text-gray-600 pr-10">
+              <p>
+                Yes! Clauses are clickable and expandable. You’ll get
+                plain-English explanations, and even emoji-coded emotional tone
+                (because some clauses are ✨suspicious✨).
+              </p>
+            </div>
+          </div>
+
+          <!-- 7 -->
+          <div class="py-6">
+            <button
+              class="w-full flex justify-between items-center text-left"
+              onclick="toggleFAQ(this)"
+            >
+              <span class="text-lg font-medium text-gray-900"
+                >What languages can I translate into?</span
+              >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6 text-gray-400 transform transition-transform duration-200"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+            <div class="faq-answer hidden mt-4 text-gray-600 pr-10">
+              <p>
+                Currently we support English, Hindi, Malayalam, Tamil, Bengali, Telugu, Kannada, Spanish, French and German—with
+                more on the way. You can toggle translations clause-by-clause or
+                for the whole document.
+              </p>
+            </div>
+          </div>
+
+          <!-- 8 -->
+          <div class="py-6">
+            <button
+              class="w-full flex justify-between items-center text-left"
+              onclick="toggleFAQ(this)"
+            >
+              <span class="text-lg font-medium text-gray-900"
+                >Can I interact with the document—click, explore, and
+                annotate?</span
+              >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6 text-gray-400 transform transition-transform duration-200"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+            <div class="faq-answer hidden mt-4 text-gray-600 pr-10">
+              <p>
+                Absolutely. You can explore summaries, expand clauses, add
+                notes, and even flag confusing parts for review. It’s your
+                document, made interactive.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-7xl mx-auto">
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-start"
+        >
+          <div class="flex flex-col space-y-2 ml-16">
+            <h2 class="text-xl font-bold text-blue-400">DocBrief</h2>
+            <p class="text-gray-400 max-w-sm">
+              AI-powered legal document analysis that makes legal documents
+              understandable for everyone.
+            </p>
+          </div>
+
+          <div class="md:text-center">
+            <h3 class="text-lg font-semibold text-gray-200 mb-2">Contact</h3>
+            <a
+              href="{{ url_for('main.contact') }}"
+              class="text-gray-400 hover:text-white transition-colors duration-200"
+            >
+              Contact Us
+            </a>
+          </div>
+        </div>
+
+        <hr class="border-t border-gray-700 my-8" />
+
+        <div
+          class="flex flex-col md:flex-row md:items-center md:justify-between text-xs text-gray-500 space-y-4 md:space-y-0"
+        >
+          <p>&copy; 2025 DocBrief. All rights reserved.</p>
+          <p class="flex items-center space-x-2">
+            <span class="text-red-500 font-bold text-base">&excl;</span>
+            <span>
+              <strong class="text-red-500">Not Legal Advice:</strong> This tool
+              provides AI-generated summaries for informational purposes only.
+              Always consult with a qualified attorney for legal advice.
+            </span>
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    {% with messages = get_flashed_messages() %} {% if messages %}
+    <div
+      x-data="{ show: true }"
+      x-show="show"
+      x-init="setTimeout(() => show = false, 5000)"
+      class="fixed top-4 right-4 z-50"
+    >
+      {% for message in messages %}
+      <div
+        class="bg-blue-600 text-white px-4 py-2 rounded-md shadow-lg animate-fade-in-out"
+      >
+        {{ message }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %} {% endwith %}
+
+    <script src="../static/script.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+      defer
+    ></script>
+
+    <!-- ✅ JS to Show Selected File Name -->
+    <script>
+      const fileInput = document.getElementById('file-upload');
+      const fileLabel = document.getElementById('file-label');
+
+      fileInput.addEventListener('change', () => {
+        if (fileInput.files.length > 0) {
+          fileLabel.textContent = "Selected file: " + fileInput.files[0].name;
+        }
+      });
+    </script>
+  </body>
+</html>

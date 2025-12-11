@@ -1,0 +1,33 @@
+This Consulting Agreement (the "Agreement") is entered into as of [Date], between:
+
+CLIENT: [Client Company Name], with an address at [Client Address] (the "Client"); and
+
+CONSULTANT: [Consultant Name/Company Name], with an address at [Consultant Address] (the "Consultant").
+
+1. Services
+The Consultant agrees to perform the following services for the Client: [Briefly describe the services, e.g., "Provide strategic advice on digital marketing initiatives and deliver a final market analysis report"] (the "Services").
+
+2. Term
+This Agreement shall commence on [Start Date] and shall continue until the Services are completed, but no later than [End Date], unless terminated earlier as provided herein.
+
+3. Compensation
+3.1. Fees. The Client shall pay the Consultant a total fee of [Total Fee Amount] ($[Total Fee Amount]), or an hourly rate of [Hourly Rate] ($[Hourly Rate]) for time spent on the Services, not to exceed [Maximum Amount].
+
+3.2. Payment. Payment shall be made [Specify Payment Terms, e.g., "net thirty (30) days from the invoice date," or "upon completion of the Services"].
+
+4. Independent Contractor Status
+The Consultant is an independent contractor and not an employee, partner, or joint venturer of the Client. The Consultant is solely responsible for all taxes, insurance, and liabilities related to the fees received under this Agreement.
+
+5. Confidentiality
+The Consultant agrees not to disclose, use, or copy any confidential or proprietary information of the Client, including business plans, client lists, or financial data, during or after the term of this Agreement.
+
+6. Ownership of Work Product
+All work product created by the Consultant in connection with the Services (the "Work Product") shall be the sole and exclusive property of the Client. The Consultant hereby assigns all rights, title, and interest in the Work Product to the Client.
+
+7. Termination
+Either party may terminate this Agreement upon [Number] days written notice to the other party. Upon termination, the Client shall pay the Consultant for all Services rendered up to the date of termination.
+
+8. Governing Law
+This Agreement shall be governed by the laws of the State of [State/Country].
+
+IN WITNESS WHEREOF, the parties have executed this Agreement as of the date first written above.

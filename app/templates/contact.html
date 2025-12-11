@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact LegalClarityAI Support</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom blue accent for input focus, matching the project's primary color */
+        .input-focus-blue:focus {
+            --tw-ring-color: #3b82f6; /* blue-500 */
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-20">
+          <!-- Logo -->
+          <div class="flex items-center">
+            <a href="{{ url_for('main.home') }}">
+              <img
+                src="../static/images/logo.png"
+                alt="DocBrief Logo"
+                class="h-16 w-auto"
+              />
+          </div>
+
+          <!-- Desktop Buttons -->
+          <div class="hidden md:flex items-center space-x-4">
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('main.dashboard') }}" class="flex items-center text-gray-700 font-medium text-lg text-black transition duration-150 hover:text-blue-700 hover:underline">
+                {{ current_user.full_name.split(' ')[0] }}
+            </a>
+
+            <a
+              href="{{ url_for('auth.logout') }}"
+              class="px-4 py-2 rounded-md font-medium bg-blue-600 text-white transition-colors duration-200 hover:bg-blue-700"
+            >
+              Log Out
+            </a>
+            {% else %}
+            <a
+              href="{{ url_for('auth.login') }}"
+              class="px-4 py-2 rounded-md font-medium border border-blue-600 text-blue-600 bg-white transition-colors duration-200 hover:bg-blue-100 hover:text-blue-800"
+            >
+              Log In
+            </a>
+            <a
+              href="{{ url_for('auth.signup') }}"
+              class="px-4 py-2 rounded-md font-medium bg-blue-600 text-white transition-colors duration-200 hover:bg-blue-700"
+            >
+              Create Free Account
+            </a>
+            {% endif %}
+          </div>
+
+          <!-- Mobile Hamburger -->
+          <div class="md:hidden">
+            <button
+              id="hamburger"
+              aria-expanded="false"
+              aria-controls="mobile-menu"
+              class="p-2 rounded-md focus:outline-none"
+            >
+              <!-- Open Icon -->
+              <svg
+                id="icon-open"
+                class="h-6 w-6"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+              <!-- Close Icon -->
+              <svg
+                id="icon-close"
+                class="h-6 w-6 hidden"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile Menu -->
+      <div
+        id="mobile-menu"
+        class="md:hidden px-4 pb-4 transform transition-all duration-300 ease-in-out opacity-0 -translate-y-2"
+        style="display: none"
+      >
+        <div class="flex justify-end space-x-2">
+          {% if current_user.is_authenticated %}
+          <a
+            href="{{ url_for('main.dashboard') }}"
+            class="px-3 py-2 rounded-md font-medium border border-blue-600 text-blue-600 bg-white transition-colors duration-200 hover:bg-blue-100 hover:text-blue-800"
+          >
+            {{ current_user.full_name.split(' ')[0] }}
+          </a>
+          <a
+            href="{{ url_for('auth.logout') }}"
+            class="px-3 py-2 rounded-md font-medium bg-blue-600 text-white transition-colors duration-200 hover:bg-blue-700"
+          >
+            Log Out
+          </a>
+          {% else %}
+          <a
+            href="{{ url_for('auth.login') }}"
+            class="px-3 py-2 rounded-md font-medium border border-blue-600 text-blue-600 bg-white transition-colors duration-200 hover:bg-blue-100 hover:text-blue-800"
+          >
+            Log In
+          </a>
+          <a
+            href="{{ url_for('auth.signup') }}"
+            class="px-3 py-2 rounded-md font-medium bg-blue-600 text-white transition-colors duration-200 hover:bg-blue-700"
+          >
+            Create Free Account
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    </nav>
+
+
+<div class="min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-lg bg-white p-8 rounded-2xl shadow-xl border border-gray-200">
+        
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-extrabold text-blue-800">Get in Touch with Support</h1>
+            <p class="mt-2 text-md text-gray-600">
+                Have questions about your account or our service? We're here to help.
+            </p>
+        </div>
+
+        <form action="{{ url_for('main.contact_submit') }}" method="POST" class="space-y-6">
+            
+            <div>
+                <label for="full_name" class="block text-sm font-semibold text-gray-700 mb-1">Full Name</label>
+                <input type="text" 
+                       id="full_name" 
+                       name="full_name" 
+                       required 
+                       class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm input-focus-blue outline-none transition duration-150"
+                       placeholder="Enter your name">
+            </div>
+
+            <div>
+                <label for="email" class="block text-sm font-semibold text-gray-700 mb-1">Email Address</label>
+                <input type="email" 
+                       id="email" 
+                       name="email" 
+                       required 
+                       class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm input-focus-blue outline-none transition duration-150"
+                       placeholder="Enter your email address">
+            </div>
+
+            <div>
+                <label for="message" class="block text-sm font-semibold text-gray-700 mb-1">How can we help you today?</label>
+                <textarea id="message" 
+                          name="message" 
+                          rows="6" 
+                          required 
+                          class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm input-focus-blue outline-none transition duration-150"
+                          placeholder="Please provide details about your question or issue..."></textarea>
+            </div>
+
+            <div>
+                <button type="submit"
+                        class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-md text-md font-bold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150">
+                    Send Inquiry
+                </button>
+            </div>
+        </form>
+
+        <p class="mt-6 text-center text-xs text-gray-500">
+            We commit to reviewing all support inquiries within one business day.
+        </p>
+
+    </div>
+</div>
+
+</body>
+</html>

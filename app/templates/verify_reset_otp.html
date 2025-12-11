@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reset Password OTP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .otp-input {
+      width: 3rem;
+      height: 3rem;
+      text-align: center;
+      font-size: 1.5rem;
+      border-radius: 0.5rem;
+      border: 2px solid #D1D5DB;
+      transition: border-color 200ms, box-shadow 200ms;
+    }
+    .otp-input:focus {
+      outline: none;
+      border-color: #3B82F6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-r from-blue-50 via-blue-200 to-indigo-300">
+
+<div class="min-h-screen flex items-center justify-center p-4">
+  <div class="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full text-center">
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="mb-4 text-sm text-red-600">
+          {% for message in messages %}
+            <p>{{ message }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <div class="text-center mb-6">
+      <h1 class="text-3xl font-bold text-gray-800">Reset Your Password</h1>
+      <p class="text-gray-500 text-sm mt-2">
+        We've sent a 6-digit OTP to your email. Enter it below to verify and continue resetting your password.
+      </p>
+    </div>
+
+    <form method="POST" action="{{ url_for('auth.verify_reset_otp') }}">
+      <div class="flex justify-center space-x-2 mb-6">
+        {% for i in range(6) %}
+          <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+        {% endfor %}
+      </div>
+
+      <input type="hidden" name="otp" id="otp-full" />
+
+      <button type="submit"
+        class="w-full bg-blue-700 text-white py-2 px-4 rounded-md hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 font-semibold">
+        Verify & Reset →
+      </button>
+    </form>
+
+    <div class="mt-6 text-sm text-gray-600 space-y-2">
+      <div>
+        Didn't receive the code?
+        <a href="{{ url_for('auth.resend_reset_otp') }}" class="text-blue-600 hover:underline">
+          Resend OTP
+        </a>
+      </div>
+      <div>
+        <a href="{{ url_for('auth.login') }}" class="text-blue-600 hover:underline">
+          ← Go back to login
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const inputs = document.querySelectorAll('.otp-input');
+  const hiddenInput = document.getElementById('otp-full');
+
+  inputs.forEach((input, index) => {
+    input.addEventListener('input', (e) => {
+      if (e.target.value.length === 1 && index < inputs.length - 1) {
+        inputs[index + 1].focus();
+      }
+    });
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && e.target.value === '' && index > 0) {
+        inputs[index - 1].focus();
+      }
+    });
+  });
+
+  document.querySelector("form").addEventListener("submit", function(e) {
+    const otp = Array.from(inputs).map(input => input.value).join("");
+    hiddenInput.value = otp;
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,12 @@
+# Virtual Environment
+venv/
+.venv/
+
+# Compiled Python Files
+__pycache__/
+*.pyc
+
+# IDE and OS Files
+.idea/  # PyCharm/IntelliJ
+.vscode/ # VS Code
+.DS_Store # macOS files
