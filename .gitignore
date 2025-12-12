@@ -1,12 +1,47 @@
-# Virtual Environment
+# -------------------------------------
+# I. Environment and Dependencies
+# -------------------------------------
+# Virtual Environments (VENV)
 venv/
 .venv/
 
-# Compiled Python Files
+# Python dependency management (Pipenv/Poetry)
+Pipfile.lock
+poetry.lock
+
+# -------------------------------------
+# II. Compiled and Temporary Files
+# -------------------------------------
+# Python Compiled Files
 __pycache__/
 *.pyc
+*.o
+*.so
 
-# IDE and OS Files
-.idea/  # PyCharm/IntelliJ
-.vscode/ # VS Code
-.DS_Store # macOS files
+# Jupyter/IPython Notebook Checkpoints
+.ipynb_checkpoints/
+
+# -------------------------------------
+# III. Security and Configuration (CRITICAL)
+# -------------------------------------
+# Flask Session Data (This contained your exposed secret)
+flask_session/
+
+# Environment variables (Contains API keys, database credentials, etc.)
+.env
+.flaskenv
+
+# Local configuration files that may hold secrets
+config.py
+
+# -------------------------------------
+# IV. IDE and OS Files
+# -------------------------------------
+# macOS files
+.DS_Store
+
+# VS Code files
+.vscode/
+
+# PyCharm/IntelliJ files
+.idea/
