@@ -1,3 +1,14 @@
+---
+title: DocBrief Summarizer
+emoji: ⚖️
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
+
 # 📄 DocBrief: AI-Powered Legal Document Summarizer
 
 ### 💡 Overview
